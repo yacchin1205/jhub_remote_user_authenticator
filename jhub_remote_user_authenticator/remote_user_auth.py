@@ -31,10 +31,23 @@ class RemoteUserAuthenticator(Authenticator):
         config=True,
         help="""HTTP header to inspect for the authenticated username.""")
 
+    """
+    Custom Logout URL (e.g. Shibboleth.sso/Logout)
+    """
+    custom_logout_url = Unicode(
+        default_value='',
+        config=True,
+        help="""The URL for Logout button""")
+
     def get_handlers(self, app):
         return [
             (r'/login', RemoteUserLoginHandler),
         ]
+
+    def logout_url(self, base_url):
+        if len(self.custom_logout_url):
+            return self.custom_logout_url
+        return super(RemoteUserAuthenticator, self).logout_url(base_url)
 
     @gen.coroutine
     def authenticate(self, *args):
@@ -52,10 +65,23 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
         config=True,
         help="""HTTP header to inspect for the authenticated username.""")
 
+    """
+    Custom Logout URL (e.g. Shibboleth.sso/Logout)
+    """
+    custom_logout_url = Unicode(
+        default_value='',
+        config=True,
+        help="""The URL for Logout button""")
+
     def get_handlers(self, app):
         return [
             (r'/login', RemoteUserLoginHandler),
         ]
+
+    def logout_url(self, base_url):
+        if len(self.custom_logout_url):
+            return self.custom_logout_url
+        return super(RemoteUserLocalAuthenticator, self).logout_url(base_url)
 
     @gen.coroutine
     def authenticate(self, *args):
