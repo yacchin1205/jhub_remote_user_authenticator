@@ -18,6 +18,15 @@ class RemoteUserLoginHandler(BaseHandler):
 
         user = self.user_from_username(remote_user)
         self.set_login_cookie(user)
+        if hasattr(user, "mail_address"):
+            mail_header_name = self.authenticator.mail_header_name
+            mail_address = self.request.headers.get(mail_header_name, "")
+            self.log.debug("E-mail address of user, current={}, set={}".format(user.mail_address, mail_address))
+            if mail_address and not user.mail_address:
+                user.mail_address = mail_address
+                self.db.commit()
+        else:
+            self.log.debug("No mail_address attribute")
         next_url = self.get_next_url(user)
         self.redirect(next_url)
 
@@ -30,6 +39,14 @@ class RemoteUserAuthenticator(Authenticator):
         default_value='REMOTE_USER',
         config=True,
         help="""HTTP header to inspect for the authenticated username.""")
+
+    """
+    Accept the email address of authenticated user from the X_AUTH_MAIL_ADDRESS HTTP header.
+    """
+    mail_header_name = Unicode(
+        default_value='X_AUTH_MAIL_ADDRESS',
+        config=True,
+        help="""HTTP header to inspect for the email address of authenticated user.""")
 
     """
     Custom Logout URL (e.g. Shibboleth.sso/Logout)
