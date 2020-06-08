@@ -22,7 +22,7 @@ class RemoteUserLoginHandler(BaseHandler):
             mail_header_name = self.authenticator.mail_header_name
             mail_address = self.request.headers.get(mail_header_name, "")
             self.log.debug("E-mail address of user, current={}, set={}".format(user.mail_address, mail_address))
-            if mail_address and not user.mail_address:
+            if mail_address:
                 user.mail_address = mail_address
                 self.db.commit()
         else:
