@@ -6,6 +6,7 @@ from jupyterhub.auth import LocalAuthenticator
 from jupyterhub.utils import url_path_join
 from tornado import gen, web
 from traitlets import Unicode
+from .utils import normalize_quoted_printable
 
 
 class RemoteUserLoginHandler(BaseHandler):
@@ -15,6 +16,8 @@ class RemoteUserLoginHandler(BaseHandler):
         remote_user = self.request.headers.get(header_name, "")
         if remote_user == "":
             raise web.HTTPError(401)
+        if self.authenticator.use_quoted_printable_normalization:
+            remote_user = normalize_quoted_printable(remote_user)
 
         user = self.user_from_username(remote_user)
         self.set_login_cookie(user)
@@ -47,6 +50,14 @@ class RemoteUserAuthenticator(Authenticator):
         default_value='X_AUTH_MAIL_ADDRESS',
         config=True,
         help="""HTTP header to inspect for the email address of authenticated user.""")
+
+    """
+    Whether to apply quoted_printable_normalization to REMOTE_USER header.
+    """
+    use_quoted_printable_normalization = Bool(
+        default_value=True,
+        config=True,
+        help="""Whether to apply quoted_printable_normalization to REMOTE_USER header""")
 
     """
     Custom Logout URL (e.g. Shibboleth.sso/Logout)
@@ -89,6 +100,14 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
         default_value='X_AUTH_MAIL_ADDRESS',
         config=True,
         help="""HTTP header to inspect for the email address of authenticated user.""")
+
+    """
+    Whether to apply quoted_printable_normalization to REMOTE_USER header.
+    """
+    use_quoted_printable_normalization = Bool(
+        default_value=True,
+        config=True,
+        help="""Whether to apply quoted_printable_normalization to REMOTE_USER header""")
 
     """
     Custom Logout URL (e.g. Shibboleth.sso/Logout)
