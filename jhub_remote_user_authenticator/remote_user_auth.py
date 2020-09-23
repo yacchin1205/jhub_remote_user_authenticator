@@ -83,6 +83,14 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
         help="""HTTP header to inspect for the authenticated username.""")
 
     """
+    Accept the email address of authenticated user from the X_AUTH_MAIL_ADDRESS HTTP header.
+    """
+    mail_header_name = Unicode(
+        default_value='X_AUTH_MAIL_ADDRESS',
+        config=True,
+        help="""HTTP header to inspect for the email address of authenticated user.""")
+
+    """
     Custom Logout URL (e.g. Shibboleth.sso/Logout)
     """
     custom_logout_url = Unicode(
