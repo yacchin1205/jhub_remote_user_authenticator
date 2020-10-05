@@ -3,8 +3,7 @@ import string
 
 def normalize_quoted_printable(srcstr):
     unreserved  = string.ascii_letters + string.digits + '-._~'
-    sub_delims = '!$&\'()*+,;='
-    pchar = (unreserved + sub_delims + ':@').encode('latin-1')
+    pchar = (unreserved + ':@').encode('latin-1')
     if isinstance(srcstr, str):
         src = srcstr.encode('utf8')
     else:
