@@ -5,7 +5,7 @@ from jupyterhub.auth import Authenticator
 from jupyterhub.auth import LocalAuthenticator
 from jupyterhub.utils import url_path_join
 from tornado import gen, web
-from traitlets import Unicode
+from traitlets import Unicode, Bool
 from .utils import normalize_quoted_printable
 
 
