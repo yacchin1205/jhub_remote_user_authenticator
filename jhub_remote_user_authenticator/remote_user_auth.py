@@ -6,7 +6,7 @@ from jupyterhub.auth import LocalAuthenticator
 from jupyterhub.utils import url_path_join
 from tornado import gen, web
 from traitlets import Unicode, Bool
-from .utils import normalize_quoted_printable
+from .utils import normalize_quoted_printable, check_valid_organization
 
 
 class RemoteUserLoginHandler(BaseHandler):
@@ -15,6 +15,8 @@ class RemoteUserLoginHandler(BaseHandler):
         header_name = self.authenticator.header_name
         remote_user = self.request.headers.get(header_name, "")
         if remote_user == "":
+            raise web.HTTPError(401)
+        if not self.authenticator.check_valid_organization(self.request.headers):
             raise web.HTTPError(401)
         if self.authenticator.use_quoted_printable_normalization:
             remote_user = normalize_quoted_printable(remote_user)
@@ -67,6 +69,14 @@ class RemoteUserAuthenticator(Authenticator):
         config=True,
         help="""The URL for Logout button""")
 
+    """
+    Whether to allow any organizations.
+    """
+    allow_any_organizations = Bool(
+        default_value=False,
+        config=True,
+        help="""Whether to allow any organizations""")
+
     def get_handlers(self, app):
         return [
             (r'/login', RemoteUserLoginHandler),
@@ -80,6 +90,12 @@ class RemoteUserAuthenticator(Authenticator):
     @gen.coroutine
     def authenticate(self, *args):
         raise NotImplementedError()
+
+    def check_valid_organization(self, headers):
+        if self.allow_any_organizations:
+            return True
+        self.log.debug("Headers: {}".format(repr(headers)))
+        return check_valid_organization(headers)
 
 
 class RemoteUserLocalAuthenticator(LocalAuthenticator):
@@ -117,6 +133,14 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
         config=True,
         help="""The URL for Logout button""")
 
+    """
+    Whether to allow any organizations.
+    """
+    allow_any_organizations = Bool(
+        default_value=False,
+        config=True,
+        help="""Whether to allow any organizations""")
+
     def get_handlers(self, app):
         return [
             (r'/login', RemoteUserLoginHandler),
@@ -130,3 +154,9 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
     @gen.coroutine
     def authenticate(self, *args):
         raise NotImplementedError()
+
+    def check_valid_organization(self, headers):
+        if self.allow_any_organizations:
+            return True
+        self.log.debug("Headers: {}".format(repr(headers)))
+        return check_valid_organization(headers)
