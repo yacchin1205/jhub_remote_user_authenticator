@@ -94,7 +94,7 @@ class RemoteUserAuthenticator(Authenticator):
     def check_valid_organization(self, headers):
         if self.allow_any_organizations:
             return True
-        self.log.debug("Headers: {}".format(repr(headers)))
+        self.log.debug("Headers: {}".format(list(headers.keys())))
         return check_valid_organization(headers)
 
 
@@ -158,5 +158,5 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
     def check_valid_organization(self, headers):
         if self.allow_any_organizations:
             return True
-        self.log.debug("Headers: {}".format(repr(headers)))
+        self.log.debug("Headers: {}".format(list(headers.keys())))
         return check_valid_organization(headers)
