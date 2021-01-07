@@ -9,12 +9,25 @@ from traitlets import Unicode, Bool
 from .utils import normalize_quoted_printable
 
 
+def check_valid_organization(headers):
+    eppn = headers.get('Eppn', None)
+    mail = headers.get('Mail', None)
+    if eppn is None:
+        return False
+    if eppn.endswith('@openidp.nii.ac.jp'):
+        if mail is None or not mail.endswith('.ac.jp'):
+            return False
+    return True
+
+
 class RemoteUserLoginHandler(BaseHandler):
 
     def get(self):
         header_name = self.authenticator.header_name
         remote_user = self.request.headers.get(header_name, "")
         if remote_user == "":
+            raise web.HTTPError(401)
+        if not self.authenticator.check_valid_organization(self.request.headers):
             raise web.HTTPError(401)
         if self.authenticator.use_quoted_printable_normalization:
             remote_user = normalize_quoted_printable(remote_user)
@@ -67,6 +80,14 @@ class RemoteUserAuthenticator(Authenticator):
         config=True,
         help="""The URL for Logout button""")
 
+    """
+    Whether to allow any organizations.
+    """
+    allow_any_organizations = Bool(
+        default_value=False,
+        config=True,
+        help="""Whether to allow any organizations""")
+
     def get_handlers(self, app):
         return [
             (r'/login', RemoteUserLoginHandler),
@@ -80,6 +101,15 @@ class RemoteUserAuthenticator(Authenticator):
     @gen.coroutine
     def authenticate(self, *args):
         raise NotImplementedError()
+
+    def check_valid_organization(self, headers):
+        if self.allow_any_organizations:
+            return True
+        self.log.debug("Headers: {}".format(list(headers.keys())))
+        self.log.debug("Eppn: {}".format(headers.get('Eppn', '(None)')))
+        self.log.debug("Affiliation: {}".format(headers.get('Affiliation', '(None)')))
+        self.log.debug("Mail: {}".format(headers.get('Mail', '(None)')))
+        return check_valid_organization(headers)
 
 
 class RemoteUserLocalAuthenticator(LocalAuthenticator):
@@ -117,6 +147,14 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
         config=True,
         help="""The URL for Logout button""")
 
+    """
+    Whether to allow any organizations.
+    """
+    allow_any_organizations = Bool(
+        default_value=False,
+        config=True,
+        help="""Whether to allow any organizations""")
+
     def get_handlers(self, app):
         return [
             (r'/login', RemoteUserLoginHandler),
@@ -130,3 +168,12 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
     @gen.coroutine
     def authenticate(self, *args):
         raise NotImplementedError()
+
+    def check_valid_organization(self, headers):
+        if self.allow_any_organizations:
+            return True
+        self.log.debug("Headers: {}".format(list(headers.keys())))
+        self.log.debug("Eppn: {}".format(headers.get('Eppn', '(None)')))
+        self.log.debug("Affiliation: {}".format(headers.get('Affiliation', '(None)')))
+        self.log.debug("Mail: {}".format(headers.get('Mail', '(None)')))
+        return check_valid_organization(headers)
