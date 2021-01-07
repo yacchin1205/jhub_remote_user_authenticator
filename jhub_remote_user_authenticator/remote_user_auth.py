@@ -95,6 +95,9 @@ class RemoteUserAuthenticator(Authenticator):
         if self.allow_any_organizations:
             return True
         self.log.debug("Headers: {}".format(list(headers.keys())))
+        self.log.debug("Eppn: {}".format(headers.get('Eppn', '(None)')))
+        self.log.debug("Affiliation: {}".format(headers.get('Affiliation', '(None)')))
+        self.log.debug("Mail: {}".format(headers.get('Mail', '(None)')))
         return check_valid_organization(headers)
 
 
@@ -159,4 +162,7 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
         if self.allow_any_organizations:
             return True
         self.log.debug("Headers: {}".format(list(headers.keys())))
+        self.log.debug("Eppn: {}".format(headers.get('Eppn', '(None)')))
+        self.log.debug("Affiliation: {}".format(headers.get('Affiliation', '(None)')))
+        self.log.debug("Mail: {}".format(headers.get('Mail', '(None)')))
         return check_valid_organization(headers)
