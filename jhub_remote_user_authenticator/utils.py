@@ -1,9 +1,6 @@
 import string
 
 
-def check_valid_organization(headers):
-    return True
-
 def normalize_quoted_printable(srcstr):
     unreserved  = string.ascii_letters + string.digits + '-._~'
     pchar = (unreserved + ':@').encode('latin-1')

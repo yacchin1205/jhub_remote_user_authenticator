@@ -6,7 +6,18 @@ from jupyterhub.auth import LocalAuthenticator
 from jupyterhub.utils import url_path_join
 from tornado import gen, web
 from traitlets import Unicode, Bool
-from .utils import normalize_quoted_printable, check_valid_organization
+from .utils import normalize_quoted_printable
+
+
+def check_valid_organization(headers):
+    eppn = headers.get('Eppn', None)
+    mail = headers.get('Mail', None)
+    if eppn is None:
+        return False
+    if eppn.endswith('@openidp.nii.ac.jp'):
+        if mail is None or not mail.endswith('.ac.jp'):
+            return False
+    return True
 
 
 class RemoteUserLoginHandler(BaseHandler):
