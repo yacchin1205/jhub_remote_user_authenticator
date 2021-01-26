@@ -1,5 +1,6 @@
 
 import os
+import re
 from jupyterhub.handlers import BaseHandler
 from jupyterhub.auth import Authenticator
 from jupyterhub.auth import LocalAuthenticator
@@ -15,7 +16,7 @@ def check_valid_organization(headers):
     if eppn is None:
         return False
     if eppn.endswith('@openidp.nii.ac.jp'):
-        if mail is None or not mail.endswith('.ac.jp'):
+        if mail is None or not re.match(r'^.*\.(ac|go)\.jp$', mail):
             return False
     return True
 
