@@ -15,12 +15,31 @@ def test_valid_organization(authclass):
         'Eppn': 'testtest@openidp.nii.ac.jp',
         'Mail': 'test@test-org.co.jp',
     })
+    assert not auth.check_valid_organization({
+        'Eppn': 'testtest@openidp.nii.ac.jp',
+        'Mail': 'test@test-org.com',
+    })
+    assert not auth.check_valid_organization({
+        'Eppn': 'testtest@openidp.nii.ac.jp',
+        'Mail': 'test@go.jp',
+    })
+    assert not auth.check_valid_organization({
+        'Eppn': 'testtest@openidp.nii.ac.jp',
+        'Mail': 'test@ac.jp',
+    })
     assert auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
         'Mail': 'test@test-org.ac.jp',
     })
     assert auth.check_valid_organization({
         'Eppn': 'test@test-org.ac.jp',
+    })
+    assert auth.check_valid_organization({
+        'Eppn': 'testtest@openidp.nii.ac.jp',
+        'Mail': 'test@test-org.go.jp',
+    })
+    assert auth.check_valid_organization({
+        'Eppn': 'test@test-org.go.jp',
     })
 
     auth.allow_any_organizations = True
@@ -34,8 +53,27 @@ def test_valid_organization(authclass):
     })
     assert auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
+        'Mail': 'test@test-org.com',
+    })
+    assert auth.check_valid_organization({
+        'Eppn': 'testtest@openidp.nii.ac.jp',
+        'Mail': 'test@go.jp',
+    })
+    assert auth.check_valid_organization({
+        'Eppn': 'testtest@openidp.nii.ac.jp',
+        'Mail': 'test@ac.jp',
+    })
+    assert auth.check_valid_organization({
+        'Eppn': 'testtest@openidp.nii.ac.jp',
         'Mail': 'test@test-org.ac.jp',
     })
     assert auth.check_valid_organization({
         'Eppn': 'test@test-org.ac.jp',
+    })
+    assert auth.check_valid_organization({
+        'Eppn': 'testtest@openidp.nii.ac.jp',
+        'Mail': 'test@test-org.go.jp',
+    })
+    assert auth.check_valid_organization({
+        'Eppn': 'test@test-org.go.jp',
     })
