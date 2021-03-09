@@ -41,6 +41,10 @@ def test_valid_organization(authclass):
     assert auth.check_valid_organization({
         'Eppn': 'test@test-org.go.jp',
     })
+    assert auth.check_valid_organization({
+        'Eppn': 'testtest@openidp.nii.ac.jp',
+        'Mail': 'test@test.waseda.jp',
+    })
 
     auth.allow_any_organizations = True
     assert auth.check_valid_organization({})
@@ -76,4 +80,8 @@ def test_valid_organization(authclass):
     })
     assert auth.check_valid_organization({
         'Eppn': 'test@test-org.go.jp',
+    })
+    assert auth.check_valid_organization({
+        'Eppn': 'testtest@openidp.nii.ac.jp',
+        'Mail': 'test@test.waseda.jp',
     })

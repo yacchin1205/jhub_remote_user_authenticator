@@ -16,7 +16,8 @@ def check_valid_organization(headers):
     if eppn is None:
         return False
     if eppn.endswith('@openidp.nii.ac.jp'):
-        if mail is None or not re.match(r'^.*\.(ac|go)\.jp$', mail):
+        if mail is None or not (re.match(r'^.*\.(ac|go)\.jp$', mail) or
+           re.match(r'^.*\.waseda\.jp$', mail)):
             return False
     return True
 
